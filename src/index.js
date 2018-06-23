@@ -2,7 +2,7 @@ const inputParser = require('./lib/inputParser')
 const logger = require('./lib/logger')
 const _cloneDeep = require('lodash.clonedeep')
 
-  // TODO: case of no possible victory whatsoever
+  // TODO: case of no possible victory whatsoever?
 
 ;(async () => {
   try {
@@ -11,7 +11,9 @@ const _cloneDeep = require('lodash.clonedeep')
     // we could recurse instead of looping
     // but readability would be severly impaired
     // lets loop instead
+
     let gameVictory = false
+    // use retries as increments for the tower range, for the case we're looking for victory
     let tries = 0
 
     while (!gameVictory) {
@@ -32,33 +34,36 @@ const run = ({ towerRange, bots }) => {
   let init = false
   // current game turn
   let currentTurn = 1
-  // create a new botlist
-  let botList = bots
 
   // get bot ids so we can work properly with the dictionnary
-  let botIds = Object.keys(botList)
+  let botIds = Object.keys(bots)
   let leftEnemies = undefined
 
   while (!init || leftEnemies) {
-    //logger('white', `Current turn: ${currentTurn}`)
+    // the game has started
     init = true
-    leftEnemies = areThereAliveBots(botList, botIds)
+    // are there any alive enemies left
+    leftEnemies = areThereAliveBots(bots, botIds)
 
+    //if no emies left left, victory!
     if (!leftEnemies) {
       logger('green', `You win in ${currentTurn - 1} turn${currentTurn > 1 ? 's' : ''}`)
       return true
     }
-    const { canFire, targetBotId } = towerFireOnEnemy(towerRange, botList, botIds)
 
+    // can we fire, and on whom
+    const { canFire, targetBotId } = towerFireOnEnemy(towerRange, bots, botIds)
+
+    // we can fire, one of the bots gets killed
     if (canFire) {
-      const botKilled = botList[targetBotId]
+      const botKilled = bots[targetBotId]
       botKilled.isAlive = false
       logger('magenta', `Turn ${currentTurn}: Kill ${botKilled.name} at ${botKilled.currentDistance}m`)
     }
 
     // for all alive bots move them for their speed value
     // and check if they reach the tower
-    const { updatedBotList, defeat } = moveBots(botList, botIds)
+    const { updatedBotList, defeat } = moveBots(bots, botIds)
 
     if (defeat) {
       logger('red', `You lose in ${currentTurn} turn${currentTurn > 1 ? 's' : ''}`)
@@ -67,7 +72,7 @@ const run = ({ towerRange, bots }) => {
 
     botList = { ...updatedBotList }
 
-    currentTurn++
+    ++currentTurn
   }
 
 }
@@ -86,8 +91,10 @@ const towerFireOnEnemy = (towerRange, bots, botIds) => {
     // check that we can fire on the bot
     const botIsInRange = currentBot.currentDistance <= towerRange && currentBot.currentDistance !== 0
     // bot is in range, bot is alive, and we either have no target
-    // or the previous selected target is further from the tower than the target we're checking
-    if (botIsInRange && currentBot.isAlive && (!targetBotId || bots[targetBotId].currentDistance > currentBot.currentDistance)) {
+    // or the previous target is further from the tower than the target we're checking now
+    if (botIsInRange
+      && currentBot.isAlive
+      && (!targetBotId || bots[targetBotId].currentDistance > currentBot.currentDistance)) {
       targetBotId = botId
       canFire = true
     }
@@ -99,14 +106,19 @@ const towerFireOnEnemy = (towerRange, bots, botIds) => {
 // move bots of their speed
 const moveBots = (bots, botIds) => {
   let defeat = false
+
   for (let botId of botIds) {
     const currentBot = bots[botId]
 
     if (currentBot.isAlive) {
+      // move bot
       currentBot.currentDistance -= currentBot.speed
+      // distance should not be negative, we're still in a normal universe!
       currentBot.currentDistance = currentBot.currentDistance <= 0 ? 0 : currentBot.currentDistance
+      // a bot has reached the tower
       if (currentBot.currentDistance <= 0) {
         defeat = true
+        break
       }
     }
   }
