@@ -1,0 +1,14 @@
+{
+  "name": "test-cartguru",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Valentin Roudge",
+  "license": "ISC",
+  "dependencies": {
+    "lodash.compact": "^3.0.1"
+  }
+}
