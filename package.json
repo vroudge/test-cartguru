@@ -9,6 +9,7 @@
   "author": "Valentin Roudge",
   "license": "ISC",
   "dependencies": {
+    "lodash.clonedeep": "^4.5.0",
     "lodash.compact": "^3.0.1"
   }
 }
