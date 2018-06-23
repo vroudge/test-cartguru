@@ -11,7 +11,23 @@ const colors = {
   white: '\x1b[37m'
 }
 
+const output = []
 const noop = () => {}
-const logger = (color = 'white', text = '') => (console.log(colors[color] || colors['white'], text))
 
-module.exports = process.env.NODE_ENV !== 'test' ? logger : noop
+const getFinalOutput = () => {
+  return output
+}
+
+const logger = (color = 'white', text = '', enforceLoggingToConsole) => {
+  if (process.env.OUTPUT_MODE === 'stream' || enforceLoggingToConsole) {
+    console.log(colors[color] || colors['white'], text)
+  } else {
+    output.push({ color, text })
+  }
+}
+
+module.exports = {
+  logger: process.env.NODE_ENV !== 'test' ? logger : noop,
+  getFinalOutput
+}
+

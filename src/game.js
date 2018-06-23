@@ -1,5 +1,5 @@
 const _cloneDeep = require('lodash.clonedeep')
-const logger = require('./lib/logger')
+const {logger} = require('./lib/logger')
 
 // we could recurse instead of looping
 // but readability would be severly impaired
