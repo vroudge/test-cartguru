@@ -12,6 +12,11 @@ Then to run the game with the default input file, just run
 npm start
 ```
 
+Run the tests with
+```bash
+npm test
+```
+
 ## Streaming the logs instead of a report
 
 You can use the flag `OUTPUT_MODE=stream` to stream all the logs instead of just getting the final report of the game run.
