@@ -1,35 +1,22 @@
 const _cloneDeep = require('lodash.clonedeep')
-
 const logger = require('./lib/logger')
-const { inputParser } = require('./lib/inputParser')
 
-  // TODO: case of no possible victory whatsoever?
-  // TODO: entry with CLI args
+// we could recurse instead of looping
+// but readability would be severly impaired
+// lets loop instead
+const findVictoryConditions = ({towerRange, bots}) => {
+  let gameVictory = false
+  // use retries as increments for the tower range, for the case we're looking for victory
+  let tries = 0
 
-;(async () => { //entry point in IIFE since we use async/await
-  try {
-    const { towerRange, bots } = await inputParser(`${__dirname}/../input`)
-
-    // we could recurse instead of looping
-    // but readability would be severly impaired
-    // lets loop instead
-
-    let gameVictory = false
-    // use retries as increments for the tower range, for the case we're looking for victory
-    let tries = 0
-
-    while (!gameVictory) {
-      // run a deep copy of bots or we might get issues with referencing ;)
-      gameVictory = run({ towerRange: towerRange + tries, bots: _cloneDeep(bots) })
-      ++tries
-    }
-
-  } catch (e) {
-    logger('red', e)
+  while (!gameVictory) {
+    // run a deep copy of bots or we might get issues with referencing ;)
+    gameVictory = initGame({ towerRange: towerRange + tries, bots: _cloneDeep(bots) })
+    ++tries
   }
-})()
+}
 
-const run = ({ towerRange, bots }) => {
+const initGame = ({ towerRange, bots }) => {
   logger('white', `Tower range is ${towerRange}m`)
 
   // init flag for gameloop
@@ -129,12 +116,9 @@ const moveBots = (bots, botIds) => {
 }
 
 module.exports = {
-  run,
+  findVictoryConditions,
+  initGame,
   areThereAliveBots,
   towerFireOnEnemy,
   moveBots,
 }
-
-process.on('unhandledRejection', (data, promise) => {
-  console.error(data, promise)
-})

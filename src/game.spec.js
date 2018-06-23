@@ -1,23 +1,63 @@
 const should = require('should')
 const {
-  run,
+  initGame,
   areThereAliveBots,
   towerFireOnEnemy,
   moveBots,
-} = require('../src')
+} = require('./game')
 
 describe('Game', () => {
   xdescribe('run()', () => {
 
   })
 
-  xdescribe('areThereAliveBots()', () => {
-    it('should return true if there are alive bots', function () {
+  describe('areThereAliveBots()', () => {
+    const aliveBots = {
+      1: {
+        isAlive: true
+      },
+      2: {
+        isAlive: true
+      },
+      3: {
+        isAlive: true
+      },
+    }
+    const mixedAliveBots = {
+      1: {
+        isAlive: false
+      },
+      2: {
+        isAlive: true
+      },
+      3: {
+        isAlive: false
+      }
+    }
+    const allDeadBots = {
+      1: {
+        isAlive: false
+      },
+      2: {
+        isAlive: false
+      },
+      3: {
+        isAlive: false
+      }
+    }
 
+    it('should return true if there are alive bots', function () {
+      const bots = areThereAliveBots(aliveBots, [1, 2, 3])
+      const bots2 = areThereAliveBots(mixedAliveBots, [1, 2, 3])
+
+      bots.should.be.true()
+      bots2.should.be.true()
     })
 
     it('should return false if no bots are alive', function () {
+      const bots = areThereAliveBots(allDeadBots, [1, 2, 3])
 
+      bots.should.be.false()
     })
   })
 
