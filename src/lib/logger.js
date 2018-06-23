@@ -11,4 +11,7 @@ const colors = {
   white: '\x1b[37m'
 }
 
-module.exports = (color = 'white', text = '') => console.log(colors[color] || colors['white'], text)
+const noop = () => {}
+const logger = (color = 'white', text = '') => (console.log(colors[color] || colors['white'], text))
+
+module.exports = process.env.NODE_ENV !== 'test' ? logger : noop

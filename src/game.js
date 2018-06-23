@@ -11,10 +11,23 @@ const findVictoryConditions = ({ towerRange, bots }) => {
 
   while (!gameVictory) {
     // run a deep copy of bots or we might get issues with referencing ;)
-    const { victory } = initGame({ towerRange: towerRange + tries, bots: _cloneDeep(bots) })
+    const { victory, currentTurn } = initGame({ towerRange: towerRange + tries, bots: _cloneDeep(bots) })
     gameVictory = victory
+
+    if (victory) {
+      logger('green', `You win in ${currentTurn - 1} turn${currentTurn > 1 ? 's' : ''}`)
+    } else {
+      logger('red', `You lose in ${currentTurn} turn${currentTurn > 1 ? 's' : ''}`)
+    }
+    // just so we dont get stuck on an unwinnable game ;)
+    if (tries >= process.env.MAX_RETRIES) {
+      return { gameVictory: false, tries: process.env.MAX_RETRIES }
+    }
+
     ++tries
   }
+
+  return { gameVictory, tries }
 }
 
 const initGame = ({ towerRange, bots }) => {
@@ -37,8 +50,7 @@ const initGame = ({ towerRange, bots }) => {
 
     //if no emies left left, victory!
     if (!leftEnemies) {
-      logger('green', `You win in ${currentTurn - 1} turn${currentTurn > 1 ? 's' : ''}`)
-      return { towerRange, bots, victory: true }
+      return { currentTurn, towerRange, bots, victory: true }
     }
 
     // can we fire, and on whom
@@ -56,8 +68,7 @@ const initGame = ({ towerRange, bots }) => {
     const { updatedBotList, defeat } = moveBots(bots, botIds)
 
     if (defeat) {
-      logger('red', `You lose in ${currentTurn} turn${currentTurn > 1 ? 's' : ''}`)
-      return { towerRange, bots, victory: false }
+      return { currentTurn, towerRange, bots, victory: false }
     }
 
     botList = { ...updatedBotList }

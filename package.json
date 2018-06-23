@@ -7,8 +7,8 @@
     "node": ">=10.4.1"
   },
   "scripts": {
-    "start": "node ./index.js",
-    "test": "mocha 'src/**/*.spec.js'"
+    "start": "MAX_RETRIES=500 node ./index.js",
+    "test": "NODE_ENV=test mocha 'src/**/*.spec.js'"
   },
   "author": "Valentin Roudge",
   "license": "ISC",
