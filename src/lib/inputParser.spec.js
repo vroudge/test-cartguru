@@ -17,6 +17,7 @@ describe('inputParser', () => {
       format.should.eql('10m')
       format2.should.eql('1290m')
     })
+
     it('should not match an invalid formatted tower range format', () => {
       const invalidTowerRangeFormat = 'INVALID_TOWER_RANGE_FORMAT'
 
@@ -38,6 +39,7 @@ describe('inputParser', () => {
       format2.should.eql('testBot 1000m 200m')
       format3.should.eql('goldorak 1m 2m')
     })
+
     it('should not match an invalid formatted tower range format', () => {
       const invalidBotFormat = 'INVALID_BOT_FORMAT'
 
@@ -78,7 +80,6 @@ describe('inputParser', () => {
     const specInputsLocation = './src/lib/test'
 
     describe('Through file system', () => {
-
       it('should read an input file and return a bot dictionnary and a tower range in a flat object', async () => {
         const parsedData = await inputParser(`${specInputsLocation}/correct.input.spec`)
         parsedData.should.eql({
@@ -144,7 +145,6 @@ describe('inputParser', () => {
 
         await inputParser(`${specInputsLocation}/incorrect.input.2.spec`).should.be.rejectedWith(Error, botlessFileError)
       })
-
     })
 
     xdescribe('Through CLI', () => {
@@ -153,4 +153,5 @@ describe('inputParser', () => {
       })
     })
   })
+
 })

@@ -6,7 +6,7 @@ const { inputParser } = require('./lib/inputParser')
   // TODO: case of no possible victory whatsoever?
   // TODO: entry with CLI args
 
-;(async () => {
+;(async () => { //entry point in IIFE since we use async/await
   try {
     const { towerRange, bots } = await inputParser(`${__dirname}/../input`)
 
@@ -117,7 +117,7 @@ const moveBots = (bots, botIds) => {
       currentBot.currentDistance -= currentBot.speed
       // distance should not be negative, we're still in a normal universe!
       currentBot.currentDistance = currentBot.currentDistance <= 0 ? 0 : currentBot.currentDistance
-      // a bot has reached the tower
+      // a bot has reached the tower, game is lost, exit the loop
       if (currentBot.currentDistance <= 0) {
         defeat = true
         break
@@ -126,6 +126,13 @@ const moveBots = (bots, botIds) => {
   }
 
   return { updatedBotList: bots, defeat }
+}
+
+module.exports = {
+  run,
+  areThereAliveBots,
+  towerFireOnEnemy,
+  moveBots,
 }
 
 process.on('unhandledRejection', (data, promise) => {

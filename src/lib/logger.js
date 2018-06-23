@@ -1,3 +1,5 @@
+// No chalk module, no problem
+
 const colors = {
   black: '\x1b[30m',
   red: '\x1b[31m',
