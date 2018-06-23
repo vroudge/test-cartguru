@@ -5,13 +5,25 @@ const _compact = require('lodash.compact')
 const readFileAsync = promisify(readFile)
 
 // Look for: a meter distance
-const validateTowerRangeFormat = format => format && format.trim().match(/^([0-9]+m)\s?/gi)[0]
+const validateTowerRangeFormat = format => {
+  try {
+    return format && format.trim().match(/^([0-9]+m)\s?/gi)[0]
+  } catch (e) {
+    throw new Error('INVALID_TOWER_RANGE_FORMAT')
+  }
+}
 
 // Look for: a word, whitespace, a meter distance, whitespace, another meter distance
-const validatebotExpectedFormat = format => format && format.trim().match(/([a-z0-9]+){1}\s([0-9]+m(\s)?){2}/gi)[0]
+const validatebotExpectedFormat = format => {
+  try {
+    return format && format.trim().match(/([a-z0-9]+){1}\s([0-9]+m(\s)?){2}/gi)[0]
+  } catch (e) {
+    throw new Error('INVALID_BOT_FORMAT')
+  }
+}
 
 // Remove m from string and cast to integer
-const meterStringToInteger = string => parseInt(string.replace(/m/, ''), 10)
+const meterStringToInteger = string => parseInt(string.replace(/[^0-9]+/g, ''), 10)
 
 const createBotFromArrayOfParameters = arrayOfParameters => {
   const initialDistance = meterStringToInteger(arrayOfParameters[1])
@@ -47,6 +59,10 @@ const inputParser = async (location = './input') => {
     // Split text file using its new lines
     const lines = _compact(file.split('\n'))
 
+    if (!lines.length) {
+      throw new Error('EMPTY_FILE')
+    }
+
     // first line is range of tower
     const towerRange = validateTowerRangeFormat(lines[0])
     parsedData.towerRange = meterStringToInteger(towerRange)
@@ -57,15 +73,27 @@ const inputParser = async (location = './input') => {
 
       // split to get all the different parameters as array
       const botParams = newBotRawData.split(/\s/)
+
       // create bot if expected parameters are there with an unique id
       // (bots might have identical names)
       acc[index + 1] = createBotFromArrayOfParameters(botParams)
       return acc
     }, {})
+
+    if(!Object.keys(parsedData.bots).length){
+      throw new Error('NO_BOTS_IN_INPUT_FILE')
+    }
+
     return parsedData
   } catch (e) {
-    throw new Error('WRONG_INPUT')
+    throw e
   }
 }
 
-module.exports = inputParser
+module.exports = {
+  inputParser,
+  validateTowerRangeFormat,
+  validatebotExpectedFormat,
+  meterStringToInteger,
+  createBotFromArrayOfParameters
+}

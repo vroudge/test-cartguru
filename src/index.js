@@ -1,8 +1,10 @@
-const inputParser = require('./lib/inputParser')
-const logger = require('./lib/logger')
 const _cloneDeep = require('lodash.clonedeep')
 
+const logger = require('./lib/logger')
+const { inputParser } = require('./lib/inputParser')
+
   // TODO: case of no possible victory whatsoever?
+  // TODO: entry with CLI args
 
 ;(async () => {
   try {

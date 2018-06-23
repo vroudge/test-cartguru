@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "start": "node ./src/index.js",
+    "test": "mocha 'src/**/*.spec.js'"
   },
   "author": "Valentin Roudge",
   "license": "ISC",
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "lodash.compact": "^3.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "should": "^13.2.1"
   }
 }
