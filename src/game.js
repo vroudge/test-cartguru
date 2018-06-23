@@ -4,14 +4,15 @@ const logger = require('./lib/logger')
 // we could recurse instead of looping
 // but readability would be severly impaired
 // lets loop instead
-const findVictoryConditions = ({towerRange, bots}) => {
+const findVictoryConditions = ({ towerRange, bots }) => {
   let gameVictory = false
   // use retries as increments for the tower range, for the case we're looking for victory
   let tries = 0
 
   while (!gameVictory) {
     // run a deep copy of bots or we might get issues with referencing ;)
-    gameVictory = initGame({ towerRange: towerRange + tries, bots: _cloneDeep(bots) })
+    const { victory } = initGame({ towerRange: towerRange + tries, bots: _cloneDeep(bots) })
+    gameVictory = victory
     ++tries
   }
 }
@@ -37,7 +38,7 @@ const initGame = ({ towerRange, bots }) => {
     //if no emies left left, victory!
     if (!leftEnemies) {
       logger('green', `You win in ${currentTurn - 1} turn${currentTurn > 1 ? 's' : ''}`)
-      return true
+      return { towerRange, bots, victory: true }
     }
 
     // can we fire, and on whom
@@ -56,7 +57,7 @@ const initGame = ({ towerRange, bots }) => {
 
     if (defeat) {
       logger('red', `You lose in ${currentTurn} turn${currentTurn > 1 ? 's' : ''}`)
-      return false
+      return { towerRange, bots, victory: false }
     }
 
     botList = { ...updatedBotList }
